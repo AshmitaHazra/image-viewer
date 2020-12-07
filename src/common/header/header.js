@@ -1,132 +1,180 @@
-import React, { Component } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
-import Input from '@material-ui/core/Input'
-import IconButton from '@material-ui/core/IconButton'
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { Link } from 'react-router-dom';
-import profileImage from "../../assets/upgrad.svg"
-import { MenuList } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Redirect } from 'react-router-dom'
-
+import React, { Component } from "react";
 import "./header.css";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import InputBase from "@material-ui/core/InputBase";
+import { withStyles } from "@material-ui/core/styles";
+import SearchIcon from "@material-ui/icons/Search";
+import IconButton from "@material-ui/core/IconButton";
+import MenuItem from "@material-ui/core/MenuItem";
+import Popover from "@material-ui/core/Popover";
+import { Link } from "react-router-dom";
+import { Avatar } from "@material-ui/core";
 
-
-// Custom Styles to over ride material ui default styles
-const styles = (theme => ({
-    menuItems: {  //Style for the menu items 
-        "text-decoration": "none",
-        "color": "black",
-        "text-decoration-underline": "none",
-    },
-    searchText: {  //seach text styling 
-        "position": "relative",
-        "width": "100%",
-    },
-    menuList: { //Styling for the menulist component
-        "width": "150px",
-        padding: "0px"
-
+const styles = (theme) => ({
+  grow: {
+    flexGrow: 1
+  },
+  search: {
+    position: "relative",
+    borderRadius: "4px",
+    backgroundColor: "#c0c0c0",
+    marginLeft: 0,
+    width: "300px"
+  },
+  searchIcon: {
+    width: theme.spacing.unit * 4,
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#000000"
+  },
+  inputInput: {
+    paddingTop: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 4,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: 120,
+      "&:focus": {
+        width: 200
+      }
     }
-
-}))
-
-
+  },
+  avatar: {
+    width: 50,
+    height: 50
+  },
+  appHeader: {
+    backgroundColor: "#263238"
+  },
+  hr: {
+    height: "1.5px",
+    backgroundColor: "#f2f2f2",
+    marginLeft: "5px",
+    marginRight: "5px"
+  }
+});
 
 class Header extends Component {
-    constructor() {
-        super();
-        this.state = {
-            menuIsOpen: false,
-            isLoggedIn: true,
-        };
-
-    }
-
-    //This method is to handle the open menu when profile button is clicked
-    openMenu = () => this.setState({
-        ...this.state,
-        menuIsOpen: !this.state.menuIsOpen
-    })
-    //This method is called when the profile icon is clicked to open the menu
-    profileButtonClicked = (event) => {
-        this.state.anchorEl ? this.setState({ anchorEl: null }) : this.setState({ anchorEl: event.currentTarget });
-        this.openMenu();
+  constructor(props) {
+    super(props);
+    this.state = {
+      anchorEl: null
     };
+  }
 
-    // This method is called when text is entered into search input, 
-    //this inturn calls method onSearchTextChange of Home component and passes the text entered in the search input
-    onSearchChangeHandler = (event) => {
-        this.props.onSearchTextChange(event.target.value);
-    }
+  render() {
+    const { classes, screen } = this.props;
+    return (
+      <div>
+        <AppBar className={classes.appHeader}>
+          <Toolbar>
+            {/*   Here, we are displaying logo Image Viewer on all the 3 pages : Login, Home, Profile pages */}
 
-    //This method is called when log out is clicked in the menu 
-    //The method clears the session deatils like access-token and changes the logged to false
-    onLogOutClicked = (event) => {
-        sessionStorage.removeItem("access-token"); //Clearing access-token
-        this.setState({
-            isLoggedIn:false
-        })  
-    }
+            {(screen === "Login" || screen === "Home") && (
+              <span className="header-logo">Image Viewer</span>
+            )}
+            {screen === "Profile" && (
+              <Link
+                style={{ textDecoration: "none", color: "white" }}
+                to="/home"
+              >
+                <span className="header-logo">Image Viewer</span>
+              </Link>
+            )}
+            <div className={classes.grow} />
 
-    // This is called everytime the page renders so that to check if the user is not logged to redirect to login page
-    redirectToLogin = () => {
-        if (!this.state.isLoggedIn) {
-           return <Redirect to = "/"/>
-        }
-    }
+            {/*   Here, we are checking if the UI page is Home page, then display Search bar */}
+            {screen === "Home" && (
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  onChange={(e) => {
+                    this.props.searchHandler(e.target.value);
+                  }}
+                  placeholder="Search…"
+                  classes={{
+                    input: classes.inputInput
+                  }}
+                />
+              </div>
+            )}
 
-    render() {
+            {/*   Here, we are checking if the UI page is Home or Profile page, then display Profile icon */}
+            {(screen === "Home" || screen === "Profile") && (
+              <div>
+                <IconButton onClick={this.handleClick}>
+                  <Avatar
+                    alt="Profile Pic"
+                    src="profile.png"
+                    className={classes.avatar}
+                    style={{ border: "1px solid #fff" }}
+                  />
+                </IconButton>
+                <Popover
+                  id="simple-menu"
+                  anchorEl={this.state.anchorEl}
+                  open={Boolean(this.state.anchorEl)}
+                  onClose={this.handleClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                  }}
+                >
+                  <div style={{ padding: "5px" }}>
+                    {/*   If the UI page is Home page, then drop down on the profile icon should display 2 options : 1. My Account 2. Logout */}
+                    {screen === "Home" && (
+                      <div>
+                        <MenuItem onClick={this.handleAccount}>
+                          My Account
+                        </MenuItem>
+                        <div className={classes.hr} />
+                      </div>
+                    )}
+                    <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
+                  </div>
+                </Popover>
+              </div>
+            )}
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
 
-        //custom Styles are stored in classes
-        const { classes } = this.props;
-        return (
-            <div>
-                {/* this is called everytime the page reloads to check if the user is logged out if yes the redirects to login page */}
-                {this.redirectToLogin()}
-                <header className="app-header">
-                    <a href='/home' id="app-logo">Image Viewer</a>
-                    {this.props.showSearchBox ?                 //checking if the showSearchBox is true,only then it is shown  
-                        <span className="header-searchbox">
-                            <SearchIcon id="search-icon"></SearchIcon>
-                            <Input className={classes.searchText} placeholder="Search…" disableUnderline={true} onChange={this.onSearchChangeHandler} />
-                        </span>
-                        : <span className="header-searchbox-false" /> //To maintain the design stability
-                    }
-                    {this.props.showProfileIcon ?   // checking if the showSearchBox is true,only then it is shown 
-                        <span>
-                            <IconButton id="profile-icon" onClick={event => this.profileButtonClicked(event)}>
-                                <img src={this.props.profile_picture} alt={profileImage} id="profile-picture" />
-                            </IconButton>
-                            <Menu id="profile-menu" anchorEl={this.state.anchorEl} open={this.state.menuIsOpen} onClose={this.profileButtonClicked}>
-                                <MenuList className={classes.menuList}>
-                                    {this.props.showMyAccount === true ?
-                                    <div>
-                                        <Link to={"/profile"} className={classes.menuItems} underline="none" color={"default"}>
-                                            <MenuItem className={classes.menuItems} onClick={this.onMyAccountClicked} disableGutters={false}>My account</MenuItem>
-                                        </Link>
-                                    
-                                    <div className="horizontal-line"> </div>
-                                    </div>
-                                    : ""
-                                    }
-                                        <MenuItem className="menu-items" onClick={this.onLogOutClicked}>Logout</MenuItem>
-                                </MenuList>
-                            </Menu>
-                        </span>
-                        : ""
-                    }
+  handleClick = (event) => {
+    this.setState({
+      anchorEl: event.currentTarget
+    });
+  };
 
-                </header>
+  handleAccount = () => {
+    // Perform navigate to Profile page by clicking on My Account dropdown action
+    this.props.handleAccount();
+    this.handleClose();
+  };
 
-            </div>
+  handleLogout = () => {
+    // Perform logout operation
+    this.props.handleLogout();
+    this.handleClose();
+  };
 
-
-        )
-    }
-
-
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
 }
 
 export default withStyles(styles)(Header);
