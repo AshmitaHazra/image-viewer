@@ -15,7 +15,7 @@ class App extends Component {
   constructor(props) {
     super(props)
 
-    this.baseUrl = 'https://graph.instagram.com'
+    this.baseUrl = 'https://graph.instagram.com/'
   }
 
   render() {

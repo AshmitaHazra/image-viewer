@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel';
-import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/Button'; 
 import Typography from '@material-ui/core/Typography';
 import { Redirect } from 'react-router-dom'
 
@@ -104,7 +104,10 @@ class Home extends Component {
                     });
                 };
             });
-            xhr.open("GET", this.props.baseUrl + "me/media?fields=id,caption&access_token=" + that.state.accessToken);
+            xhr.open("GET", this.props.baseUrl + "me/media?fields=id,caption&access_token="+ that.state.accessToken);
+            //xhr.open("GET", this.props.baseUrl + "me/media?fields=id,caption&access_token=" + that.state.accessToken);
+            console.log("Ashmita");
+            console.log(data);
             xhr.send(data);
         }
 
@@ -116,9 +119,9 @@ class Home extends Component {
             let xhrImages = new XMLHttpRequest();
             xhrImages.addEventListener("readystatechange", function () {
                 if (this.readyState === 4) {
-                    
                     let imageArr = JSON.parse(this.responseText).data
                     //As the created_time are in milliseconds it would be  converted as per the required format 
+                    
                     imageArr.forEach(element => {
                         var date = parseInt(element.created_time, 10);
                         date = new Date(date * 1000);

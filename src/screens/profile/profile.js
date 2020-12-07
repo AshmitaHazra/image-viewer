@@ -116,7 +116,7 @@ class Profile extends Component {
                     that.setState({ fullname: resp["full_name"] });
                 }
             });
-            xhr.open("GET", this.props.baseUrl + "?access_token="+ that.state.accessToken);
+            xhr.open("GET", this.props.baseUrl + "me/media?fields=id,caption&access_token="+ that.state.accessToken);
 
 
             xhr.send(data);
@@ -128,7 +128,7 @@ class Profile extends Component {
                     that.setState({ imagesData: JSON.parse(this.responseText).data });
                 }
             });
-            imageXhr.open("GET", this.props.baseUrl + "media/recent?access_token="+that.state.accessToken );
+            imageXhr.open("GET", this.props.baseUrl + "fields=id,media_type,media_url,username,timestamp&access_token="+that.state.accessToken );
             imageXhr.send(imageData);
         }
     }
